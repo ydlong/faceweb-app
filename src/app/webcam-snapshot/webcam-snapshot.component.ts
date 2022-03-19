@@ -10,14 +10,14 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   HEIGHT = 240; //480;
 
   @ViewChild("video")
-  public video: ElementRef;
+  public video!: ElementRef;
 
   @ViewChild("canvas")
-  public canvas: ElementRef;
+  public canvas!: ElementRef;
 
   captures: string[] = [];
   error: any;
-  isCaptured: boolean;
+  isCaptured!: boolean;
 
   async ngAfterViewInit() {
     await this.setupDevices();
