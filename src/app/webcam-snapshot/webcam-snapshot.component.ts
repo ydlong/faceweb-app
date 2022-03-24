@@ -12,8 +12,8 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
   constructor (private http: HttpClient){}
 
-  WIDTH = 320; //640;
-  HEIGHT = 240; //480;
+  WIDTH = 640;
+  HEIGHT = 480;
 
   @ViewChild("video")
   public video!: ElementRef;
@@ -25,7 +25,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   error: any;
   isCaptured!: boolean;
 
-  private dfapiUrl = "http://127.0.0.1:5000/verify";
+  private dfapiUrl = "http:/192.168.1.176:5000/verify";
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
@@ -56,8 +56,12 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
   postCapture() : Observable<any>{
     this.faceData = {"model_name":"Facenet",
-                     "img":[{"img1": this.captures[0]}]
+                     "img":[
+                              {"img1": this.captures[0]}
+                           ]
                     }
+    console.log(this.faceData);
+    
     return this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)
       .pipe(
         catchError(this.handleError())
@@ -83,9 +87,9 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
   capture() {
     this.drawImageToCanvas(this.video.nativeElement);
-    this.captures.push(this.canvas.nativeElement.toDataURL("image/png"));
+    this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
     let dectect = this.postCapture();
-    //console.log(dectect);
+    console.log(dectect);
     this.isCaptured = true;
   }
 
