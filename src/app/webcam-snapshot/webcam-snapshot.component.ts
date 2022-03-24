@@ -1,4 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { catchError, map } from "rxjs/operators";
+import { Observable, of } from "rxjs"
 
 @Component({
   selector: "app-webcam-snapshot",
@@ -6,6 +9,9 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
   styleUrls: ["./webcam-snapshot.component.scss"]
 })
 export class WebcamSnapshotComponent implements AfterViewInit {
+
+  constructor (private http: HttpClient){}
+
   WIDTH = 320; //640;
   HEIGHT = 240; //480;
 
@@ -18,6 +24,12 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   captures: string[] = [];
   error: any;
   isCaptured!: boolean;
+
+  private dfapiUrl = "http://127.0.0.1:5000/verify";
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
+  faceData = {}
 
   async ngAfterViewInit() {
     await this.setupDevices();
@@ -42,9 +54,38 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     }
   }
 
+  postCapture() : Observable<any>{
+    this.faceData = {"model_name":"Facenet",
+                     "img":[{"img1": this.captures[0]}]
+                    }
+    return this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)
+      .pipe(
+        catchError(this.handleError())
+      );
+    
+  }
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      console.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+  }
+
+
+
   capture() {
     this.drawImageToCanvas(this.video.nativeElement);
     this.captures.push(this.canvas.nativeElement.toDataURL("image/png"));
+    let dectect = this.postCapture();
+    //console.log(dectect);
     this.isCaptured = true;
   }
 
