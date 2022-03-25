@@ -25,10 +25,12 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   error: any;
   isCaptured!: boolean;
 
-  private dfapiUrl = "http:/192.168.1.176:5000/verify";
+  private dfapiUrl = "http:/192.168.1.176:5000/find";
+
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
+  }
+
   faceData = {}
 
   async ngAfterViewInit() {
@@ -55,11 +57,8 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   }
 
   postCapture() : Observable<any>{
-    this.faceData = {"model_name":"Facenet",
-                     "img":[
-                              {"img1": this.captures[0]}
-                           ]
-                    }
+    this.faceData = {"img": this.captures[0] }
+
     console.log(this.faceData);
     
     return this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)
