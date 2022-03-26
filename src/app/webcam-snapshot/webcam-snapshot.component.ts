@@ -25,13 +25,14 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   error: any;
   isCaptured!: boolean;
 
-  private dfapiUrl = "http://192.168.1.154:5000/find";
+  private dfapiUrl = "http://127.0.0.1:5000/find";
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   }
 
   faceData = {}
+  matches:any ;
 
   async ngAfterViewInit() {
     await this.setupDevices();
@@ -56,19 +57,9 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     }
   }
 
-  postCapture() : Observable<any>{
+  postCapture():Observable<any> {
     this.faceData = {"img": this.captures[0] }
-
-    console.log(this.dfapiUrl, this.faceData, this.httpOptions);
-    
-    let resp =  this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)
-      //.pipe(
-      //  catchError(this.handleError())
-      //);
-    console.log(resp);
-    
-    return resp;
-    
+    return this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)   
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
@@ -90,9 +81,13 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   capture() {
     this.drawImageToCanvas(this.video.nativeElement);
     this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
-    let dectect = this.postCapture();
-    console.log(dectect);
+    this.postCapture().subscribe(match => {
+      this.matches = match;
+      console.log(this.matches) ;
+      });
+    
     this.isCaptured = true;
+    
   }
 
   removeCurrent() {
