@@ -1,10 +1,10 @@
-<div class="video-container" *ngIf="!error">
+<div class="video-container" *ngIf="!error && videoShow===true">
 	<video [class.show]="!isCaptured" [class.hide]="isCaptured" #video id="video" [width]="WIDTH" [height]="HEIGHT"
 		autoplay></video>
 	<canvas [class.show]="isCaptured" [class.hide]="!isCaptured" #canvas id="canvas" [width]="WIDTH"
 		[height]="HEIGHT"></canvas>
 </div>
-
+<img [src]="imgPath" *ngIf="photoShow === true"  height="300">
 <div class="snap-container">
 	<button class="btn btn-primary" *ngIf="!isCaptured" (click)="capture()">Snap Photo</button>
 	<button class="btn btn-danger" *ngIf="isCaptured" (click)="removeCurrent()">Take Another</button>
