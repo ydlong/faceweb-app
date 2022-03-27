@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { catchError, map } from "rxjs/operators";
 import { Observable, of } from "rxjs"
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: "app-webcam-snapshot",
@@ -10,7 +12,10 @@ import { Observable, of } from "rxjs"
 })
 export class WebcamSnapshotComponent implements AfterViewInit {
 
-  constructor (private http: HttpClient){}
+  constructor (private http: HttpClient, private sanitizer: DomSanitizer){}
+
+  videoShow = true;
+  photoShow = false;
 
   WIDTH = 640;
   HEIGHT = 480;
@@ -33,6 +38,8 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
   faceData = {}
   matches:any ;
+
+  imgPath=""
 
   async ngAfterViewInit() {
     await this.setupDevices();
@@ -58,7 +65,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   }
 
   postCapture():Observable<any> {
-    this.faceData = {"img": this.captures[0] }
+    this.faceData = {"img": this.captures[this.captures.length-1] }
     return this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)   
   }
 
@@ -79,11 +86,24 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
 
   capture() {
-    this.drawImageToCanvas(this.video.nativeElement);
+    this.drawImageToCanvas(this.video.nativeElement); 
     this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
+    
     this.postCapture().subscribe(match => {
       this.matches = match;
-      console.log(this.matches) ;
+      let rtImg= this.matches.finding.dispimg  ;
+      let dt = this.matches.finding.dt;
+
+      this.videoShow = false;
+      this.photoShow = true;
+      if (rtImg != undefined){
+
+        this.imgPath = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,'  + rtImg) as string;
+      } else {
+        this.imgPath ='assets/happy.jpg' ;
+      }
+
+        console.log(this.imgPath, dt);
       });
     
     this.isCaptured = true;
@@ -91,6 +111,9 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   }
 
   removeCurrent() {
+    this.videoShow = true;
+    this.photoShow = false;
+    this.ngAfterViewInit();
     this.isCaptured = false;
   }
 
