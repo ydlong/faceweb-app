@@ -30,7 +30,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   error: any;
   isCaptured!: boolean;
 
-  private dfapiUrl = "http://192.168.1.176:5000/find";
+  private dfapiUrl!:string;
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -86,6 +86,12 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
 
   capture() {
+
+    let currurl = window.location.href;
+    let urlarr = currurl.split(":");
+    let apiurl = urlarr[0] + ":" + urlarr[1] + ":5000/find";
+    this.dfapiUrl = apiurl;
+
     this.drawImageToCanvas(this.video.nativeElement); 
     this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
     
