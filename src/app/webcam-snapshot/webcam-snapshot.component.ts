@@ -30,7 +30,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   error: any;
   isCaptured!: boolean;
 
-  private dfapiUrl = "http://127.0.0.1:5000/find";
+  private dfapiUrl = "http://192.168.1.176:5000/find";
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
