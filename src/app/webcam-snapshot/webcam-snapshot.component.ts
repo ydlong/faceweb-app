@@ -89,8 +89,13 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
     let currurl = window.location.href;
     let urlarr = currurl.split(":");
-    let apiurl = urlarr[0] + ":" + urlarr[1] + ":5000/find";
-    this.dfapiUrl = apiurl;
+    if (urlarr[1] === "//localhost"){
+      this.dfapiUrl = "https://192.168.1.176:5000/find";
+    } else {
+      this.dfapiUrl = urlarr[0] + ":" + urlarr[1] + ":5000/find";
+    }
+    let apiurl = 
+    
 
     this.drawImageToCanvas(this.video.nativeElement); 
     this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
