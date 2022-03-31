@@ -10,6 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   templateUrl: "./webcam-snapshot.component.html",
   styleUrls: ["./webcam-snapshot.component.scss"]
 })
+
 export class WebcamSnapshotComponent implements AfterViewInit {
 
   constructor (private http: HttpClient, private sanitizer: DomSanitizer){}
@@ -94,9 +95,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     } else {
       this.dfapiUrl = urlarr[0] + ":" + urlarr[1] + ":5000/find";
     }
-    let apiurl = 
     
-
     this.drawImageToCanvas(this.video.nativeElement); 
     this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
     
@@ -108,12 +107,10 @@ export class WebcamSnapshotComponent implements AfterViewInit {
       this.videoShow = false;
       this.photoShow = true;
       if (rtImg != undefined){
-
         this.imgPath = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,'  + rtImg) as string;
       } else {
         this.imgPath ='assets/happy.jpg' ;
       }
-
         console.log(this.imgPath, dt);
       });
     

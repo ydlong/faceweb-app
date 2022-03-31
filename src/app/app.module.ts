@@ -7,9 +7,10 @@ import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { AppComponent } from "./app.component";
 import { HelloComponent } from "./hello.component";
 import { WebcamSnapshotModule } from "./webcam-snapshot/webcam-snapshot.module";
+import { ClockModule } from "./clock/clock.module";
 
 @NgModule({
-  imports: [BrowserModule, FormsModule, WebcamSnapshotModule, HttpClientModule],
+  imports: [BrowserModule, FormsModule, WebcamSnapshotModule, ClockModule, HttpClientModule],
   declarations: [AppComponent, HelloComponent],
   bootstrap: [AppComponent]
 })
