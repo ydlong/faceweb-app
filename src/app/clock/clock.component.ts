@@ -14,7 +14,7 @@ export class ClockComponent {
 
     year!: string;
     month!: string;
-    day!: string;
+    appday!: string;
     hours!: string;
     minutes!: string;
     seconds!: string;
@@ -32,9 +32,9 @@ export class ClockComponent {
 
     private setCurrentTime() {
         const time = new Date(Date.now());
-        this.year = this.leftPadZero(time.getFullYear());
+        this.year = this.leftPadZero(time.getUTCFullYear());
         this.month = time.toLocaleString('en-us', { month: 'short' }); 
-        this.day = this.leftPadZero(time.getDay());
+        this.appday = this.leftPadZero(time.getUTCDate());
         this.hours = this.leftPadZero(time.getHours());
         this.minutes = this.leftPadZero(time.getMinutes());
         this.seconds = this.leftPadZero(time.getSeconds());
