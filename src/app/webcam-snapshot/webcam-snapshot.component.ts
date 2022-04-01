@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
+import { OnInit, AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { catchError, map } from "rxjs/operators";
 import { Observable, of } from "rxjs"
 import { DomSanitizer } from '@angular/platform-browser';
-
+import { AppService } from "../app.services";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-webcam-snapshot",
@@ -12,8 +13,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 
 export class WebcamSnapshotComponent implements AfterViewInit {
+  constructor (private http: HttpClient, private sanitizer: DomSanitizer, private appService:AppService){}
 
-  constructor (private http: HttpClient, private sanitizer: DomSanitizer){}
+  clockEventsubscription!: Subscription;
+  clockCurr!:string;
 
   videoShow = true;
   photoShow = false;
@@ -87,6 +90,9 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
 
   capture() {
+    this.clockEventsubscription =  this.appService.getCapturedEvent().subscribe((dt)=>{
+      this.clockCurr = dt;
+    })
 
     let currurl = window.location.href;
     let urlarr = currurl.split(":");
@@ -111,9 +117,10 @@ export class WebcamSnapshotComponent implements AfterViewInit {
       } else {
         this.imgPath ='assets/happy.jpg' ;
       }
-        console.log(this.imgPath, dt);
+        console.log(this.imgPath, this.clockCurr);
       });
     
+     
     this.isCaptured = true;
     
   }
@@ -123,6 +130,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     this.photoShow = false;
     this.ngAfterViewInit();
     this.isCaptured = false;
+    this.clockEventsubscription.unsubscribe();
   }
 
   setPhoto(idx: number) {
@@ -137,4 +145,6 @@ export class WebcamSnapshotComponent implements AfterViewInit {
       .getContext("2d")
       .drawImage(image, 0, 0, this.WIDTH, this.HEIGHT);
   }
+
+
 }
