@@ -90,6 +90,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
 
 
   capture() {
+    
     this.clockEventsubscription =  this.appService.getCapturedEvent().subscribe((dt)=>{
       this.clockCurr = dt;
     })
@@ -120,7 +121,6 @@ export class WebcamSnapshotComponent implements AfterViewInit {
         console.log(this.imgPath, this.clockCurr);
       });
     
-     
     this.isCaptured = true;
     
   }
@@ -130,7 +130,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     this.photoShow = false;
     this.ngAfterViewInit();
     this.isCaptured = false;
-    this.clockEventsubscription.unsubscribe();
+    this.clockEventsubscription.unsubscribe(); 
   }
 
   setPhoto(idx: number) {
