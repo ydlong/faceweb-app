@@ -35,6 +35,7 @@ export class WebcamSnapshotComponent implements AfterViewInit {
   isCaptured!: boolean;
 
   private dfapiUrl!:string;
+  private apiUrl!:string;
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -73,19 +74,22 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     return this.http.post(this.dfapiUrl, this.faceData, this.httpOptions)   
   }
 
+  saveCapture(saveData: {}): Observable<any> {
+    const save_apiUrl = this.apiUrl+"captured";
+    return this.http.post(save_apiUrl, saveData, this.httpOptions)        
+  }
+
+  /*
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-
       // TODO: better job of transforming error for user consumption
       console.log(`${operation} failed: ${error.message}`);
-
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
-  }
+  } */
 
 
 
@@ -98,28 +102,44 @@ export class WebcamSnapshotComponent implements AfterViewInit {
     let currurl = window.location.href;
     let urlarr = currurl.split(":");
     if (urlarr[1] === "//localhost"){
-      this.dfapiUrl = "https://192.168.1.176:5000/find";
+      this.apiUrl = "https://192.168.1.176:5000/";
     } else {
-      this.dfapiUrl = urlarr[0] + ":" + urlarr[1] + ":5000/find";
+      this.apiUrl = urlarr[0] + ":" + urlarr[1] + ":5000/";
     }
-    
+    this.dfapiUrl = this.apiUrl + "find"
+
     this.drawImageToCanvas(this.video.nativeElement); 
-    this.captures.push(this.canvas.nativeElement.toDataURL("image/jpeg"));
+    let captureImg = this.canvas.nativeElement.toDataURL("image/jpeg");
+    this.captures.push(captureImg);
     
     this.postCapture().subscribe(match => {
       this.matches = match;
       let rtImg= this.matches.finding.dispimg  ;
+      let matchedName!:string;
       let dt = this.matches.finding.dt;
+      let cid = this.matches.trx_id;
 
       this.videoShow = false;
       this.photoShow = true;
-      if (rtImg != undefined){
+      if (rtImg != ""){
         this.imgPath = this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,'  + rtImg) as string;
+        matchedName = this.matches.finding.matched_name;
       } else {
         this.imgPath ='assets/happy.jpg' ;
+        matchedName = ""
       }
-        console.log(this.imgPath, this.clockCurr);
-      });
+
+      // save captured
+      console.log(matchedName);
+      let saveData = { "dt": this.clockCurr, "id": cid, "img": captureImg, "name": matchedName }
+      this.saveCapture(saveData).subscribe( save => {
+         console.log(save) 
+         if (save==="ok"){
+           // email
+         }
+      } );
+      
+    });
     
     this.isCaptured = true;
     
